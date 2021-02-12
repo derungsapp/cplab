@@ -1,9 +1,12 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
     <title>Upload file to S3</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
+
 <body>
     <div class="container">
         <h1>CPLab HS20</h1>
@@ -16,10 +19,10 @@
 
         <!-- Form Upload -->
         <div class="FormUpload">
-            <form action="/api/detect"
-                  enctype="multipart/form-data" onsubmit="AJAXSubmit(this);return false;"
-                  method="post">
-                <p><input type="file" accept="image/*" name="image" id="file" onchange="loadFile(event)" style="display: none;"></p>
+            <form action="/api/detect" enctype="multipart/form-data" onsubmit="AJAXSubmit(this);return false;"
+                method="post">
+                <p><input type="file" accept="image/*" name="image" id="file" onchange="loadFile(event)"
+                        style="display: none;"></p>
 
                 <p><input type='submit' id="submit" style="cursor: pointer;" value="Submit" onclick="fileSend()" /></p>
 
@@ -31,10 +34,9 @@
         <div class="LabelDetect">
             <h1>Detected label:</h1>
             <h1 id="detected-label"></h1>
-                
-            <form action="/api/rate"
-                  enctype="multipart/form-data" onsubmit="AJAXSubmitStats(this);return false;"
-                  method="post">
+
+            <form action="/api/rate" enctype="multipart/form-data" onsubmit="AJAXSubmitStats(this);return false;"
+                method="post">
                 <input type="hidden" name="correct" value="true" />
                 <input class="image-id" type="hidden" name="image-id" />
                 <input class="label-id" type="hidden" name="label" />
@@ -43,9 +45,8 @@
 
             </form>
 
-            <form action="/api/rate"
-                  enctype="multipart/form-data" onsubmit="AJAXSubmitStats(this);return false;"
-                  method="post">
+            <form action="/api/rate" enctype="multipart/form-data" onsubmit="AJAXSubmitStats(this);return false;"
+                method="post">
                 <input type="hidden" name="correct" value="false" />
                 <input class="image-id" type="hidden" name="image-id" />
                 <input class="label-id" type="hidden" name="label" />
@@ -102,10 +103,10 @@
 
                 try {
                     const response = await fetch(oFormElement.action,
-                            {
-                                method: 'POST',
-                                body: formData
-                            })
+                        {
+                            method: 'POST',
+                            body: formData
+                        })
                         .then(res => res.json())
                         .then(data => {
                             var h1 = document.getElementById("detected-label");
@@ -147,20 +148,23 @@
 
                 try {
                     const response = await fetch(oFormElement.action,
-                            {
-                                method: 'POST',
-                                body: formData
-                            })
+                        {
+                            method: 'POST',
+                            body: formData
+                        })
                         .then(res => res.json())
                         .then(data => {
                             var personal = data.userStats;
                             var global = data.globalStats;
 
+                            personalData(personal);
+                            globalData(global);
+
                             $(function () {
 
                                 $(".delete-me").remove();
 
-                                $.each(personal, function(i, item) {
+                                $.each(personal, function (i, item) {
                                     var $tr = $('<tr class="delete-me">').append(
                                         $('<td>').text(item.label),
                                         $('<td>').text(item.correctRecords),
@@ -169,8 +173,8 @@
                                 });
                             });
 
-                            $(function() {
-                                $.each(global, function(i, item) {
+                            $(function () {
+                                $.each(global, function (i, item) {
                                     var $tr = $('<tr class="delete-me">').append(
                                         $('<td>').text(item.label),
                                         $('<td>').text(item.correctRecords),
@@ -194,13 +198,18 @@
             <h2>Upload Statistics</h2>
             <h3>Personal</h3>
 
-            <table id="personal">
-                <tr>
-                    <th>Category</th>
-                    <th>True</th>
-                    <th>False</th>
-                </tr>
-            </table>
+            <div class="stats">
+                <table id="personal">
+                    <tr>
+                        <th>Category</th>
+                        <th>True</th>
+                        <th>False</th>
+                    </tr>
+                </table>
+
+                <div id="chart_personal"></div>
+
+            </div>
 
             <br />
             <h3>Overall</h3>
@@ -212,6 +221,9 @@
                         <th>False</th>
                     </tr>
                 </table>
+
+                <div id="chart_overall"></div>
+
             </div>
         </div>
 
@@ -251,14 +263,17 @@
             margin-bottom: 15px;
         }
 
-        h1, h2 {
+        h1,
+        h2 {
             font-weight: normal;
             margin-bottom: 15px;
         }
 
-        button, input[type="button"], input[type="submit"] {
+        button,
+        input[type="button"],
+        input[type="submit"] {
             color: rgb(0, 29, 0);
-            font: bold 84% 'trebuchet ms',helvetica,sans-serif;
+            font: bold 84% 'trebuchet ms', helvetica, sans-serif;
             background-color: #fed;
             border: 1px solid;
             border-color: #696 #363 #363 #696;
@@ -282,10 +297,11 @@
         table {
             font-family: arial, sans-serif;
             border-collapse: collapse;
-            width: 100%;
+            width: 50%;
         }
 
-        td, th {
+        td,
+        th {
             border: 1px solid #dddddd;
             text-align: left;
             padding: 8px;
@@ -302,6 +318,84 @@
             margin-right: auto;
             text-align: center;
         }
+
+        .stats {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
     </style>
+
+    <script>
+
+
+        function personalData(paraData) {
+
+        }
+
+        function globalData(paraData) {
+
+        }
+
+        google.charts.load('current', { packages: ['corechart', 'bar'] });
+        google.charts.setOnLoadCallback(drawMultSeries1);
+
+        function drawMultSeries1() {
+            var data = google.visualization.arrayToDataTable([
+                ['Labels', 'True', 'False'],
+                ['Human', 8175000, 8008000],
+                ['Animal', 3792000, 3694000],
+                ['Outdoors', 2695000, 2896000],
+                ['Car', 2099000, 1953000],
+                ['Undefined', 1526000, 1517000]
+            ]);
+
+            var options = {
+                title: 'Population of Largest U.S. Cities',
+                chartArea: { width: '50%' },
+                hAxis: {
+                    title: 'Total Population',
+                    minValue: 0
+                },
+                vAxis: {
+                    title: 'City'
+                }
+            };
+
+            var chart = new google.visualization.BarChart(document.getElementById('chart_personal'));
+            chart.draw(data, options);
+        }
+
+        google.charts.load('current', { packages: ['corechart', 'bar'] });
+        google.charts.setOnLoadCallback(drawMultSeries2);
+
+        function drawMultSeries2() {
+            var data = google.visualization.arrayToDataTable([
+                ['Labels', '2010 Population', '2000 Population'],
+                ['New York City, NY', 8175000, 8008000],
+                ['Los Angeles, CA', 3792000, 3694000],
+                ['Chicago, IL', 2695000, 2896000],
+                ['Houston, TX', 2099000, 1953000],
+                ['Philadelphia, PA', 1526000, 1517000]
+            ]);
+
+            var options = {
+                title: 'Population of Largest U.S. Cities',
+                chartArea: { width: '50%' },
+                hAxis: {
+                    title: 'Total Population',
+                    minValue: 0
+                },
+                vAxis: {
+                    title: 'City'
+                }
+            };
+
+            var chart = new google.visualization.BarChart(document.getElementById('chart_overall'));
+            chart.draw(data, options);
+        }
+
+    </script>
 </body>
+
 </html>

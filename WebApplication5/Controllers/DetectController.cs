@@ -44,7 +44,7 @@ namespace WebApplication5.Controllers
         {
             return;
 
-            var credentials = new BasicAWSCredentials("AKIAIAV7QE63K7EHOVBQ", "wEoegCfvNQ0i5vF73PRxWaiqssYp5nlZclya9/JU");
+            var credentials = new BasicAWSCredentials("", "");
             var config = new AmazonS3Config
             {
                 RegionEndpoint = Amazon.RegionEndpoint.EUCentral1
@@ -73,7 +73,7 @@ namespace WebApplication5.Controllers
             var random = new Random();
             return AllowedLabels[random.Next(0, 4)];
 
-            var credentials = new BasicAWSCredentials("AKIAIAV7QE63K7EHOVBQ", "wEoegCfvNQ0i5vF73PRxWaiqssYp5nlZclya9/JU");
+            var credentials = new BasicAWSCredentials("", "");
             var config = new AmazonRekognitionConfig
             {
                 RegionEndpoint = Amazon.RegionEndpoint.EUCentral1

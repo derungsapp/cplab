@@ -36,10 +36,32 @@ namespace WebApplication5.Controllers
         [HttpPost]
         public async Task<Statistic> Post()
         {
+
+            return new Statistic
+            {
+                UserStats =
+                   new List<LabelStats>
+                   {
+                        new LabelStats {TotalRecords = 4, CorrectRecords = 4, Label = "Human"},
+                        new LabelStats {TotalRecords = 7, CorrectRecords = 6, Label = "Animal"},
+                        new LabelStats {TotalRecords = 5, CorrectRecords = 1, Label = "Outdoors"},
+                        new LabelStats {TotalRecords = 2, CorrectRecords = 2, Label = "Car"},
+                        new LabelStats {TotalRecords = 1, CorrectRecords = 0, Label = "Undefined"}
+                   },
+                GlobalStats = new List<LabelStats>
+                {
+                    new LabelStats {TotalRecords = 12, CorrectRecords = 11, Label = "Human"},
+                    new LabelStats {TotalRecords = 13, CorrectRecords = 13, Label = "Animal"},
+                    new LabelStats {TotalRecords = 22, CorrectRecords = 21, Label = "Outdoors"},
+                    new LabelStats {TotalRecords = 32, CorrectRecords = 27, Label = "Car"},
+                    new LabelStats {TotalRecords = 2, CorrectRecords = 0, Label = "Undefined"}
+                }
+            };
+
             var userName = User?.Claims?.FirstOrDefault(p => p.Type == "cognito:username")?.Value;
             var correct = Convert.ToBoolean(Request.Form["correct"]);
             var label = Request.Form["label"].ToString();
-            var credentials = new BasicAWSCredentials("AKIAIAV7QE63K7EHOVBQ", "wEoegCfvNQ0i5vF73PRxWaiqssYp5nlZclya9/JU");
+            var credentials = new BasicAWSCredentials("", "");
             var config = new AmazonDynamoDBConfig
             {
                 RegionEndpoint = Amazon.RegionEndpoint.USEast2

@@ -9,110 +9,35 @@ using Amazon.DynamoDBv2.Model;
 using Amazon.Runtime;
 using Amazon.S3;
 using Microsoft.AspNetCore.Authorization;
+using WebApplication5.Models;
+using WebApplication5.Services;
 
 namespace WebApplication5.Controllers
 {
-    public class LabelStats
-    {
-        public string Label { get; set; }
-        public int TotalRecords { get; set; }
-        public int CorrectRecords { get; set; }
-        public int WrongRecords => TotalRecords - CorrectRecords;
-    }
-
-    public class Statistic
-    {
-        public List<LabelStats> UserStats { get; set; }
-        public List<LabelStats> GlobalStats { get; set; }
-    }
-
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class RateController : ControllerBase
     {
+        private readonly IStatisticsService _statisticsService;
+
+        public RateController(IStatisticsService statisticsService)
+        {
+            _statisticsService = statisticsService;
+        }
 
         // POST api/<RateController>
         [HttpPost]
-        public async Task<Statistic> Post()
+        public async Task<Statistics> Post()
         {
-
-            return new Statistic
-            {
-                UserStats =
-                   new List<LabelStats>
-                   {
-                        new LabelStats {TotalRecords = 4, CorrectRecords = 4, Label = "Human"},
-                        new LabelStats {TotalRecords = 7, CorrectRecords = 6, Label = "Animal"},
-                        new LabelStats {TotalRecords = 5, CorrectRecords = 1, Label = "Outdoors"},
-                        new LabelStats {TotalRecords = 2, CorrectRecords = 2, Label = "Car"},
-                        new LabelStats {TotalRecords = 1, CorrectRecords = 0, Label = "Undefined"}
-                   },
-                GlobalStats = new List<LabelStats>
-                {
-                    new LabelStats {TotalRecords = 12, CorrectRecords = 11, Label = "Human"},
-                    new LabelStats {TotalRecords = 13, CorrectRecords = 13, Label = "Animal"},
-                    new LabelStats {TotalRecords = 22, CorrectRecords = 21, Label = "Outdoors"},
-                    new LabelStats {TotalRecords = 32, CorrectRecords = 27, Label = "Car"},
-                    new LabelStats {TotalRecords = 2, CorrectRecords = 0, Label = "Undefined"}
-                }
-            };
-
-            var userName = User?.Claims?.FirstOrDefault(p => p.Type == "cognito:username")?.Value;
+            var user = User?.Claims?.FirstOrDefault(p => p.Type == "cognito:username")?.Value;
             var correct = Convert.ToBoolean(Request.Form["correct"]);
             var label = Request.Form["label"].ToString();
-            var credentials = new BasicAWSCredentials("", "");
-            var config = new AmazonDynamoDBConfig
-            {
-                RegionEndpoint = Amazon.RegionEndpoint.USEast2
-            };
 
-            using var dynamoClient = new AmazonDynamoDBClient(credentials, config);
+            await _statisticsService.RateAsync(label, correct, user);
 
-            var item = new Dictionary<string, AttributeValue>
-            {
-                {"id", new AttributeValue(Guid.NewGuid().ToString())},
-                {"label", new AttributeValue(label)},
-                {"user", new AttributeValue(userName)},
-                {"correct", new AttributeValue(correct.ToString())}
-            };
-
-            //await dynamoClient.PutItemAsync("statistics", item);
-
-            var scanRequest = await dynamoClient.ScanAsync(new ScanRequest("statistics"));
-            
-            return new Statistic
-            {
-                UserStats =
-                    new List<LabelStats>
-                    {
-                        new LabelStats {TotalRecords = CountRecords(scanRequest, "Human", userName), CorrectRecords = CountCorrectRecords(scanRequest, "Human", userName), Label = "Human"},
-                        new LabelStats {TotalRecords = CountRecords(scanRequest, "Animal", userName), CorrectRecords = CountCorrectRecords(scanRequest, "Animal", userName), Label = "Animal"},
-                        new LabelStats {TotalRecords = CountRecords(scanRequest, "Outdoors", userName), CorrectRecords = CountCorrectRecords(scanRequest, "Outdoors", userName), Label = "Outdoors"},
-                        new LabelStats {TotalRecords = CountRecords(scanRequest, "Car", userName), CorrectRecords = CountCorrectRecords(scanRequest, "Car", userName), Label = "Car"},
-                        new LabelStats {TotalRecords = CountRecords(scanRequest, "Undefined", userName), CorrectRecords = CountCorrectRecords(scanRequest, "Undefined", userName), Label = "Undefined"}
-                    },
-                GlobalStats = new List<LabelStats>
-                {
-                    new LabelStats {TotalRecords = CountRecords(scanRequest, "Human"), CorrectRecords = CountCorrectRecords(scanRequest, "Human"), Label = "Human"},
-                    new LabelStats {TotalRecords = CountRecords(scanRequest, "Animal"), CorrectRecords = CountCorrectRecords(scanRequest, "Animal"), Label = "Animal"},
-                    new LabelStats {TotalRecords = CountRecords(scanRequest, "Outdoors"), CorrectRecords = CountCorrectRecords(scanRequest, "Outdoors"), Label = "Outdoors"},
-                    new LabelStats {TotalRecords = CountRecords(scanRequest, "Car"), CorrectRecords = CountCorrectRecords(scanRequest, "Car"), Label = "Car"},
-                    new LabelStats {TotalRecords = CountRecords(scanRequest, "Undefined"), CorrectRecords = CountCorrectRecords(scanRequest, "Undefined"), Label = "Undefined"}
-                }
-            };
+            return await _statisticsService.GetStatisticsAsync(user);
         }
 
-        public int CountRecords(ScanResponse scanResponse, string label, string user = null)
-        {
-            var data = user == null ? scanResponse.Items.ToList() : scanResponse.Items.Where(p => p.Any(s => s.Key.ToString() == "user" && s.Value.S.ToString() == user)).ToList();
-            return data.Count(p => p.Any(s => s.Key.ToString() == "label" && s.Value.S.ToString() == label));
-        }
-
-        public int CountCorrectRecords(ScanResponse scanResponse, string label, string user = null)
-        {
-            var data = user == null ? scanResponse.Items.ToList() : scanResponse.Items.Where(p => p.Any(s => s.Key.ToString() == "user" && s.Value.S.ToString() == user)).ToList();
-            return data.Where(p => p.Any(s => s.Key.ToString() == "label" && s.Value.S.ToString() == label)).Count(p => p.Any(s => s.Key.ToString() == "correct" && s.Value.S.ToString() == "True"));
-        }
     }
 }

@@ -15,8 +15,7 @@ namespace WebApplication5.Controllers
     {
         public IActionResult Index()
         {
-            Console.WriteLine("Redirect");
-            return Redirect("/Luiz.html");
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

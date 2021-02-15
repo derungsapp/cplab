@@ -43,7 +43,7 @@ namespace WebApplication5
                     options.ResponseType = Configuration["Authentication:Cognito:ResponseType"];
                     options.MetadataAddress = Configuration["Authentication:Cognito:MetadataAddress"];
                     options.ClientId = Configuration["Authentication:Cognito:ClientId"];
-                    options.ClientSecret = "1la2r6ttmv4v37qvj9qjetfqqa24hch39652ne1ut2tp5i7ihgk0";
+                    options.ClientSecret = "10pmkpeic5vt9dtdn6g18l86gcjj11ffjsfq38jutvsh5lrtp2d0";
                 });
 
 

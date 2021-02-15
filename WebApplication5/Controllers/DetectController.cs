@@ -26,32 +26,24 @@ namespace WebApplication5.Controllers
     public class DetectController : ControllerBase
     {
 
-        public List<string> AllowedLabels = new List<string>() { "Animal", "Car", "Human", "Outdoors" };
+        public List<string> AllowedLabels = new List<string>() { "Animal", "Car", "Human", "Outdoors", "Undefined" };
 
         [HttpPost]
         public async Task<Result> Post()
         {
-            try
-            {
-
-         
             var file = Request.Form.Files.First();
             var folder = await DetectImageLabel(file);
             var id = Guid.NewGuid().ToString();
             await UploadImage(file, folder, id);
 
             return new Result() { Label = folder, FileName = id, Confidence = 0.95 };
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
         }
 
 
         public async Task UploadImage(IFormFile file, string folder, string id)
         {
+            return;
+
             var credentials = new BasicAWSCredentials("AKIAIAV7QE63K7EHOVBQ", "wEoegCfvNQ0i5vF73PRxWaiqssYp5nlZclya9/JU");
             var config = new AmazonS3Config
             {
@@ -78,6 +70,9 @@ namespace WebApplication5.Controllers
 
         public async Task<string> DetectImageLabel(IFormFile formFile)
         {
+            var random = new Random();
+            return AllowedLabels[random.Next(0, 4)];
+
             var credentials = new BasicAWSCredentials("AKIAIAV7QE63K7EHOVBQ", "wEoegCfvNQ0i5vF73PRxWaiqssYp5nlZclya9/JU");
             var config = new AmazonRekognitionConfig
             {

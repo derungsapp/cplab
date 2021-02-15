@@ -55,7 +55,7 @@ namespace WebApplication5.Controllers
                 {"correct", new AttributeValue(correct.ToString())}
             };
 
-            await dynamoClient.PutItemAsync("statistics", item);
+            //await dynamoClient.PutItemAsync("statistics", item);
 
             var scanRequest = await dynamoClient.ScanAsync(new ScanRequest("statistics"));
             

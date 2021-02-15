@@ -39,7 +39,7 @@ namespace WebApplication5.Controllers
             var userName = User?.Claims?.FirstOrDefault(p => p.Type == "cognito:username")?.Value;
             var correct = Convert.ToBoolean(Request.Form["correct"]);
             var label = Request.Form["label"].ToString();
-            var credentials = new BasicAWSCredentials("AKIAIPUTIIF6B7ECFVAA", "WzYtZCvQzSisqJLK2MeLuonyStekec962UjWKWAP");
+            var credentials = new BasicAWSCredentials("AKIAIAV7QE63K7EHOVBQ", "wEoegCfvNQ0i5vF73PRxWaiqssYp5nlZclya9/JU");
             var config = new AmazonDynamoDBConfig
             {
                 RegionEndpoint = Amazon.RegionEndpoint.USEast2

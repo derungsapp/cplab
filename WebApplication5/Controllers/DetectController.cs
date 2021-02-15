@@ -31,19 +31,28 @@ namespace WebApplication5.Controllers
         [HttpPost]
         public async Task<Result> Post()
         {
+            try
+            {
+
+         
             var file = Request.Form.Files.First();
             var folder = await DetectImageLabel(file);
             var id = Guid.NewGuid().ToString();
             await UploadImage(file, folder, id);
 
             return new Result() { Label = folder, FileName = id, Confidence = 0.95 };
-
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
 
         public async Task UploadImage(IFormFile file, string folder, string id)
         {
-            var credentials = new BasicAWSCredentials("AKIAIPUTIIF6B7ECFVAA", "WzYtZCvQzSisqJLK2MeLuonyStekec962UjWKWAP");
+            var credentials = new BasicAWSCredentials("AKIAIAV7QE63K7EHOVBQ", "wEoegCfvNQ0i5vF73PRxWaiqssYp5nlZclya9/JU");
             var config = new AmazonS3Config
             {
                 RegionEndpoint = Amazon.RegionEndpoint.EUCentral1
@@ -69,7 +78,7 @@ namespace WebApplication5.Controllers
 
         public async Task<string> DetectImageLabel(IFormFile formFile)
         {
-            var credentials = new BasicAWSCredentials("AKIAIPUTIIF6B7ECFVAA", "WzYtZCvQzSisqJLK2MeLuonyStekec962UjWKWAP");
+            var credentials = new BasicAWSCredentials("AKIAIAV7QE63K7EHOVBQ", "wEoegCfvNQ0i5vF73PRxWaiqssYp5nlZclya9/JU");
             var config = new AmazonRekognitionConfig
             {
                 RegionEndpoint = Amazon.RegionEndpoint.EUCentral1
